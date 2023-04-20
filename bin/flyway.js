@@ -61,7 +61,7 @@ function binIsFile(path) {
     return !!stats && stats.isFile();
 }
 
-function exeCommand(cmd) {
+function exeCommand(filename, options) {
     var config = require(path.resolve(program.opts().configfile));
 
     if (typeof config === 'function') {
@@ -82,7 +82,7 @@ function exeCommand(cmd) {
         }
 
         const args = configFlywayArgs(config)
-            .concat([cmd._name]);
+            .concat([options.name()]);
 
         // Fix problem with spaces on windows OS
         // https://github.com/nodejs/node/issues/7367
