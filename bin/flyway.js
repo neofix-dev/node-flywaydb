@@ -2,7 +2,7 @@
 
 'use strict';
 
-const program = require('commander');
+const commander = require('commander');
 const path = require('path');
 const spawn = require('child_process').spawn;
 const fs = require('fs');
@@ -11,9 +11,12 @@ const pkg = require('../package.json');
 const download = require('../lib/download');
 
 process.title = 'flyway';
+
+const program = new commander.Command();
+
 program
     .version(pkg.version)
-    .option('-c, --configfile <file>', 'A javascript or json file containing configuration.')
+    .requiredOption('-c, --configfile <file>', 'A javascript or json file containing configuration.')
     .on('--help', function() {
         console.log('  See Flyway\'s configuration options at https://flywaydb.org/documentation/commandline/');
     });
@@ -34,7 +37,7 @@ makeCommand('repair', `Repairs the Flyway metadata table. This will perform the 
                (User objects left behind must still be cleaned up manually)
              - Correct wrong checksums`);
 
-program.parse(process.argv);
+program.parse();
 
 function makeCommand(name, desc) {
     program
@@ -59,11 +62,7 @@ function binIsFile(path) {
 }
 
 function exeCommand(cmd) {
-    if(!program.configfile) {
-        throw new Error('Config file option is required');
-    }
-
-    var config = require(path.resolve(program.configfile));
+    var config = require(path.resolve(program.opts().configfile));
 
     if (typeof config === 'function') {
         config = config();
